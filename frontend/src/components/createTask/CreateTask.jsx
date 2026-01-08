@@ -13,7 +13,7 @@ function CreateTask() {
     const handleAdd = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("/task/addTask", {title, description},{
+            await axios.post("/task/addTask", {title, description},{
               headers: {
                 Authorization: `Bearer ${userToken}`
               }
