@@ -31,12 +31,12 @@ jobs:
           rsync -az --delete \
             frontend/build/ \
             ubuntu@${{ secrets.EC2_HOST }}:/var/www/todo-frontend \
-            -e "ssh -i key.pem -o StrictHostKeyChecking=no"
+            -e "ssh -i pr.pem -o StrictHostKeyChecking=no"
 
 
       - name: Deploy backend
         run: |
-          ssh -i key.pem -o StrictHostKeyChecking=no \
+          ssh -i pr.pem -o StrictHostKeyChecking=no \
             ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
               cd /home/ubuntu/mern-todo-app/backend
               git pull origin main
