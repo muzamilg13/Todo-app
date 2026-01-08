@@ -1,0 +1,46 @@
+name: Deploy todo app
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v6
+
+      - name: Setuop node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 18
+
+      - name: install npm
+        working-directory: frontend
+        run: npm install
+
+      - name: build
+        working-directory: frontend
+        run: npm run build
+
+      - name: update frontend on ec2
+        run: |
+          rsync -az --delete \
+            frontend/build/ \
+            ubuntu@${{ secrets.EC2_HOST }}:/var/www/todo-frontend \
+            -e "ssh -i key.pem -o StrictHostKeyChecking=no"
+
+
+      - name: Deploy backend
+        run: |
+          ssh -i key.pem -o StrictHostKeyChecking=no \
+            ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+              cd /home/ubuntu/mern-todo-app/backend
+              git pull origin main
+              npm install
+              sudo systemctl restart todo-backend
+              sudo systemctl reload nginx
+          EOF
