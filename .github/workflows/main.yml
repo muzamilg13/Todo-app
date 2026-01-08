@@ -26,6 +26,14 @@ jobs:
         working-directory: frontend
         run: npm run build
 
+      - name: prepare SSH key
+        run: |
+          cat << 'EOF' >> key.pem
+          ${{ secrets.EC2_SSH_KEY }}
+          EOF
+          chmod 600 key.pem
+          ls -l key.pem
+
       - name: update frontend on ec2
         run: |
           rsync -az --delete \
