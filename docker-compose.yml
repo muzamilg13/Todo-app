@@ -1,0 +1,28 @@
+services:
+  mongo:
+    image: mongo
+    volumes:
+      - mongo-data:/data/db
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/todo
+    depends_on:
+      - mongo
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend/build:/usr/share/nginx/html
+    depends_on:
+      - backend
+
+volumes:
+  mongo-data:
+
+
